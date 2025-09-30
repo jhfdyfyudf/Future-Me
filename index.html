@@ -48,6 +48,46 @@
       outline: 4px dashed #3B82F6;
       animation: pulse-glow 2s infinite;
     }
+    /* Speech Bubble */
+    .speech-bubble {
+      position: relative;
+      background: #e2e8f0; /* bg-slate-200 */
+      border-radius: .4em;
+    }
+    .speech-bubble:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border: 20px solid transparent;
+      border-top-color: #e2e8f0; /* bg-slate-200 */
+      border-bottom: 0;
+      border-left: 0;
+      margin-left: -10px;
+      margin-bottom: -20px;
+    }
+    /* Bounce In Animation */
+    @keyframes bounce-in {
+      0% {
+        opacity: 0;
+        transform: scale(.3);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      70% {
+        transform: scale(.9);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    .animate-bounce-in {
+        animation: bounce-in 0.6s ease-out;
+    }
 </style>
 </head>
   <body class="bg-slate-50">

@@ -7,7 +7,7 @@ export const generateCareerDetails = async (careerName: string): Promise<CareerD
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `Generate details for the profession '${careerName}' for a 12-year-old. Provide a short, exciting story intro, a simple description, 3-4 tools they use, 3-4 key skills, and 2-3 fun facts.`,
+      contents: `Generate details for the profession '${careerName}' for a 12-year-old. Provide a short, exciting story intro, a simple description, 3-4 tools they use, 3-4 key skills, 2-3 fun facts, and a list of 3 simple question-and-answer pairs a child might ask about the job.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -18,8 +18,20 @@ export const generateCareerDetails = async (careerName: string): Promise<CareerD
             tools: { type: Type.ARRAY, items: { type: Type.STRING }, description: "A list of tools used in the profession." },
             skills: { type: Type.ARRAY, items: { type: Type.STRING }, description: "A list of key skills for the job." },
             funFacts: { type: Type.ARRAY, items: { type: Type.STRING }, description: "A list of fun facts about the career." },
+            qna: {
+              type: Type.ARRAY,
+              description: "A list of question and answer pairs.",
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  question: { type: Type.STRING },
+                  answer: { type: Type.STRING }
+                },
+                required: ["question", "answer"]
+              }
+            }
           },
-          required: ["storyIntro", "description", "tools", "skills", "funFacts"]
+          required: ["storyIntro", "description", "tools", "skills", "funFacts", "qna"]
         },
       },
     });
@@ -36,7 +48,7 @@ export const generateInteractiveGame = async (careerName: string): Promise<Inter
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `Create an interactive, step-by-step, first-person POV mini-game for a 12-year-old about being a ${careerName}. The game should simulate a core task of the profession. Provide a title, a main scenario, and 3-4 steps. For each step, provide: a short description of the action to take, a list of 3 simple, one-word tool names (e.g., "stethoscope", "spatula", "wrench"), the name of the correct tool for the action, and a brief, encouraging explanation for the correct choice. The tools should be distinct and plausible for the scenario.`,
+      contents: `Create an interactive, step-by-step, first-person POV mini-game for a 12-year-old about being a ${careerName}. The game should simulate a core task of the profession. Provide a title, a main scenario, and 3-4 steps. For each step, provide: a short description of the action, a list of 3 simple, one-word tool names, the correct tool, a brief encouraging explanation for the correct choice, and a one-sentence hint from a friendly guide.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -53,8 +65,9 @@ export const generateInteractiveGame = async (careerName: string): Promise<Inter
                   tools: { type: Type.ARRAY, items: { type: Type.STRING }, description: "An array of three tool names." },
                   correctTool: { type: Type.STRING, description: "The name of the correct tool." },
                   explanation: { type: Type.STRING, description: "A brief, kid-friendly explanation of why the correct tool is used." },
+                  hint: { type: Type.STRING, description: "A short, encouraging hint for the player." },
                 },
-                required: ["description", "tools", "correctTool", "explanation"]
+                required: ["description", "tools", "correctTool", "explanation", "hint"]
               }
             }
           },
@@ -91,6 +104,30 @@ export const generateChallengeImage = async (scenario: string): Promise<string |
     return null;
   } catch (error) {
     console.error("Error generating challenge image:", error);
+    return null;
+  }
+};
+
+export const generateCharacterImage = async (careerName: string): Promise<string | null> => {
+  try {
+    const prompt = `A friendly, full-body cartoon character of a ${careerName} for a children's educational game. The character should be smiling, welcoming, and have a simple, colorful design with a transparent background.`;
+    const response = await ai.models.generateImages({
+      model: 'imagen-4.0-generate-001',
+      prompt: prompt,
+      config: {
+        numberOfImages: 1,
+        outputMimeType: 'image/png',
+        aspectRatio: '1:1',
+      },
+    });
+
+    if (response.generatedImages && response.generatedImages.length > 0) {
+      const base64ImageBytes: string = response.generatedImages[0].image.imageBytes;
+      return `data:image/png;base64,${base64ImageBytes}`;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error generating character image:", error);
     return null;
   }
 };

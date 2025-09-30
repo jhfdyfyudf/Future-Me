@@ -12,6 +12,8 @@ export interface CareerDetails {
   tools: string[];
   skills: string[];
   funFacts: string[];
+  qna: { question: string; answer: string }[];
+  characterImage?: string;
 }
 
 export interface GameStep {
@@ -19,6 +21,7 @@ export interface GameStep {
   tools: string[];
   correctTool: string;
   explanation: string;
+  hint: string;
 }
 
 export interface InteractiveGame {
